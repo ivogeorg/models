@@ -46,6 +46,40 @@ def build_estimator(model_dir, model_type, model_column_fn):
   run_config = tf.estimator.RunConfig().replace(
       session_config=tf.ConfigProto(device_count={'GPU': 0}))
 
+  # # To see the GPU being used, remove the 'replace'
+  # run_config = tf.estimator.RunConfig()
+
+  # # The device_count declares the available devices. If there are GPUs,
+  # # the one with index 0 will be used in priority
+  # run_config = tf.estimator.RunConfig().replace(
+  #     session_config=tf.ConfigProto(device_count={'CPU': 1, 'GPU': 0}))
+
+  # # Explore syntax further (w/o replace)
+  # run_config = tf.estimator.RunConfig(
+  #     session_config=tf.ConfigProto(device_count={'CPU': 1, 'GPU': 0}))
+
+  # # Explore syntax further (w/o replace)
+  # run_config = tf.estimator.RunConfig(
+  #     session_config=tf.ConfigProto(device_count={'CPU': 1, 'GPU': 2}))
+
+  # # Explore syntax further (w/o replace)
+  # run_config = tf.estimator.RunConfig(
+  #     session_config=tf.ConfigProto(device_count={'CPU': 1, 'GPU': 1}))
+
+  ## Commentary (ivogeorg, 2018-07-12):
+  ## 1. This syntax is ugly. Generally, the config options are arbitrarily
+  ##    strewn around the API stack. What about some Python reflection?
+  ## 2. 'GPU': 0 effectively forbids the library from using a GPU, even
+  ##    if there is one.
+  ## 3. None of these options prevents the system from initializing the
+  ##    GPUs, which means this happens below the level of TensorFlow.
+  ## 4. At the level of tf.Estimator, no functionality for fine-grained
+  ##    GPU assignment is exposed. At least according to the currently
+  ##    existing documentation, this is still handled at the level of
+  ##    graph/variable creation. The CIFAR-10 image tutorial has a separate
+  ##    python script to run on 2 GPUs in parallel.
+
+  # To see another GPU being used
   if model_type == 'wide':
     return tf.estimator.LinearClassifier(
         model_dir=model_dir,
